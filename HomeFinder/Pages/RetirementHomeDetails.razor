@@ -1,0 +1,37 @@
+﻿@inject IJSRuntime JsRuntime
+@using HomeFinder.Data
+@page "/home/{id:int}"
+
+<div class="col-sm-12 col-lg-6 offset-lg-3">
+    <h3 class="nameheader">@home.Name</h3>
+
+</div>
+
+<div class="col-sm-12 col-lg-6 offset-lg-3">
+    <ul class="list">
+        <li><b>Andress: </b>@home.Adress</li>
+        <li><b>Telefon: </b> @home.Phone</li>
+        <li><b>Beskrivning: </b>@home.Description</li>
+    </ul>
+</div>
+
+<h2 class="text">Här finns vi</h2>
+<div id="map" class="map"></div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private RetirementHome home;
+
+    protected override void OnInitialized()
+    {
+        var service = new RetirementHomeService();
+        home = service.GetRetirementHome(Id);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JsRuntime.InvokeVoidAsync("blazorHelpers.triggerMap", home.Latitude, home.Longitude);
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
